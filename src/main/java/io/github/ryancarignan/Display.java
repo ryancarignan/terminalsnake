@@ -1,16 +1,3 @@
-// Display
-//     // Creates and interacts with a Lanterna Terminal instance, handling everything related to drawing to the screen
-// -------
-// *terminal: Terminal (from Lanterna)          // for interacting with the terminal display
-// *keyStroke: KeyStroke (from Lanterna)        // last pressed key
-// -------
-// *drawSnake(snake: Position[1..*])            // draws snake body blocks at the positions given
-// *drawApple(apple: Position)                  // draws apple block at the position given
-// *drawBackground(pos: Position)               // draws background at the position given
-// *writeScore(score: int)                      // draws the updated score given
-// writeGameOver()                             // draws a "Game Over" message to the center of the screen
-// *close()                                     // closes the Terminal instance
-
 package io.github.ryancarignan;
 
 import com.googlecode.lanterna.terminal.Terminal;
