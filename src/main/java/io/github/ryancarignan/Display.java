@@ -8,6 +8,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.input.KeyType;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,7 +38,7 @@ public class Display {
         textGraphics.setForegroundColor(FOREGROUND_COLOR);
 
         // enter fullscreen
-        terminal.enterPrivateMode();
+        terminal.enterPrivateMode(); // TODO uncomment out
         terminal.clearScreen();
         terminal.setCursorVisible(false);
 
@@ -50,6 +51,22 @@ public class Display {
         textGraphics.drawLine(new TerminalPosition(0, 2), new TerminalPosition(terminal.getTerminalSize().getColumns(), 2), '_');
 
         terminal.flush();
+    }
+
+    /**
+     * The game board width (the area the snake can move around in)
+     * @return the width in square columns
+     */
+    public int getWidth() throws IOException {
+        return terminal.getTerminalSize().getColumns() / 2;
+    }
+
+    /**
+     * The game board height (the area the snake can move around in)
+     * @return the height in square rows
+     */
+    public int getHeight() throws IOException {
+        return terminal.getTerminalSize().getRows() - 3;
     }
 
     public void close() {
@@ -133,5 +150,35 @@ public class Display {
         textGraphics.putString(centerX, centerY, gameOver, SGR.BOLD);
 
         terminal.flush();
+    }
+
+    public void pollInput() throws IOException {
+        keyStroke = terminal.pollInput();
+    }
+
+    public Position directionKeyPressed() {
+        if (keyStroke == null) return null;
+        Position direction = switch (keyStroke.getKeyType()) {
+            case Character -> switch (keyStroke.getCharacter()) {
+                case 'A', 'a' -> Position.LEFT;
+                case 'D', 'd' -> Position.RIGHT;
+                case 'W', 'w' -> Position.DOWN;
+                case 'S', 's' -> Position.UP;
+                default -> null;
+            };
+            case ArrowLeft -> Position.LEFT;
+            case ArrowRight -> Position.RIGHT;
+            case ArrowUp -> Position.DOWN;
+            case ArrowDown -> Position.UP;
+            default -> null;
+        };
+
+        return direction;
+    }
+
+    public boolean exitKeyPressed() {
+        return (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || 
+                                      keyStroke.getKeyType() == KeyType.Character && (keyStroke.getCharacter() == 'q' || 
+                                                                                    keyStroke.getCharacter() == 'Q')));
     }
 }
