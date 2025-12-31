@@ -21,7 +21,11 @@ public class Position {
         this.y = y;
     }
 
+    /**
+     * Returns true if all fields are equal, false otherwise
+     */
     public boolean equals(Position otherPos) {
+        if (otherPos == null) return false;
         boolean sameX = this.x == otherPos.x;
         boolean sameY = this.y == otherPos.y;
         return sameX && sameY;
@@ -44,8 +48,8 @@ public class Position {
 
     /**
      * Returns a random position that is not equal to the given positions and no greater than the given bounds
-     * @param width the max width that the returned position shoud be less than
-     * @param height the max height that the returned position should be less than
+     * @param width the max possible width
+     * @param height the max possible height
      * @param positions the positions that the new random position should be unique to
      * @return a new Position, being random and not equal to those given
      */
@@ -54,8 +58,8 @@ public class Position {
         Position newPosition;
         
         do {
-            int newX = random.nextInt(0, width - 1);
-            int newY = random.nextInt(0, height - 1);
+            int newX = random.nextInt(0, width);
+            int newY = random.nextInt(0, height);
             newPosition = new Position(newX, newY);
         } while (newPosition.isIn(positions));
 
@@ -70,6 +74,19 @@ public class Position {
     private boolean isIn(Position... positions) {
         for (Position other : positions) {
             if (this.equals(other)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if position is the same magnitude but opposite direction
+     */
+    public boolean isOppositeOf(Position otherPos) {
+        if (otherPos == null) return false;
+        if (-1 * x == otherPos.x &&
+            -1 * y == otherPos.y) 
+        {
+            return true;
         }
         return false;
     }

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class Display {
-    private static final TextColor BACKGROUND_COLOR = TextColor.ANSI.BLACK;
+    private static final TextColor BACKGROUND_COLOR = TextColor.ANSI.DEFAULT;
     private static final TextColor FOREGROUND_COLOR = TextColor.ANSI.WHITE;
     private static final TextColor      SNAKE_COLOR = TextColor.ANSI.GREEN;
     private static final TextColor      APPLE_COLOR = TextColor.ANSI.RED;
@@ -38,7 +38,7 @@ public class Display {
         textGraphics.setForegroundColor(FOREGROUND_COLOR);
 
         // enter fullscreen
-        terminal.enterPrivateMode(); // TODO uncomment out
+        terminal.enterPrivateMode();
         terminal.clearScreen();
         terminal.setCursorVisible(false);
 
@@ -48,7 +48,9 @@ public class Display {
         int width = terminal.getTerminalSize().getColumns();
         String score = "Score: 0 ";
         textGraphics.putString(width - score.length() - 2, 1, score, SGR.BOLD);
-        textGraphics.drawLine(new TerminalPosition(0, 2), new TerminalPosition(terminal.getTerminalSize().getColumns(), 2), '_');
+        TerminalPosition lineStart = new TerminalPosition(0, 2);
+        TerminalPosition lineEnd = new TerminalPosition(terminal.getTerminalSize().getColumns() - 1, 2);
+        textGraphics.drawLine(lineStart, lineEnd, '_');
 
         terminal.flush();
     }
@@ -69,6 +71,9 @@ public class Display {
         return terminal.getTerminalSize().getRows() - 3;
     }
 
+    /**
+     * Closes the terminal instance (and exits private (fullscreen) mode)
+     */
     public void close() {
         if (terminal != null) {
             try {
@@ -152,10 +157,19 @@ public class Display {
         terminal.flush();
     }
 
+    /**
+     * Polls from the input buffer, ignoring repeated key presses
+     */
     public void pollInput() throws IOException {
-        keyStroke = terminal.pollInput();
+        Position currDirection = directionKeyPressed();
+        do {
+            keyStroke = terminal.pollInput();
+        } while (currDirection != null && currDirection.equals(directionKeyPressed()));
     }
 
+    /**
+     * Returns a relative vector Position relating to the key pressed, or null if none apply
+     */
     public Position directionKeyPressed() {
         if (keyStroke == null) return null;
         Position direction = switch (keyStroke.getKeyType()) {
@@ -176,6 +190,9 @@ public class Display {
         return direction;
     }
 
+    /**
+     * Returns true if a key mapped to exiting the game was pressed, false otherwise
+     */
     public boolean exitKeyPressed() {
         return (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || 
                                       keyStroke.getKeyType() == KeyType.Character && (keyStroke.getCharacter() == 'q' || 

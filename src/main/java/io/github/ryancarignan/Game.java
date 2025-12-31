@@ -71,10 +71,13 @@ public class Game {
         }
     }
 
+    /**
+     * Starts the game loop, ending when an exit key is pressed
+     */
     public void startGame() {
         while (!gameOver) {
             try {
-                Thread.sleep(25);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println("An interrupt error has occurred");
                 gameOver = true;
@@ -86,6 +89,9 @@ public class Game {
         gameOver();
     }
 
+    /**
+     * Polls input from display and sets snakeDirection and gameOver accordingly, ignoring opposite directions
+     */
     private void readInput() {
         // read input
         try {
@@ -98,12 +104,15 @@ public class Game {
         gameOver = display.exitKeyPressed();
         // directional key?
         Position newDirection = display.directionKeyPressed();
-        if (newDirection != null) {
+        if (newDirection != null && !newDirection.isOppositeOf(snakeDirection)) {
             snakeDirection = newDirection;
         }
     }
 
-    private Position placeApple() { // FIXME - apples are going to the center of the screen I think?
+    /**
+     * Places an apple on the screen, avoiding Positions already filled by the snake or other apples
+     */
+    private Position placeApple() {
         // concatinate snake and apples
         Position[] excludedPositions = new Position[snake.size() + apples.size()];
         int i = 0; 
@@ -126,6 +135,9 @@ public class Game {
         return newApple;
     }
 
+    /**
+     * moves the snake in snakeDirection if sets
+     */
     private void moveSnake() {
         if (snakeDirection != null) {
             try {
@@ -134,12 +146,12 @@ public class Game {
                 snake.addFirst(newHead);
 
                 // remove from tail if not growing
-                if (snake.size() >= snakeLength) {
+                if (snake.size() > snakeLength) {
                     Position tail = snake.removeLast();
                     display.drawBackground(tail);
                 }
 
-                display.drawSnake(snake); // TODO change to only drawing new head
+                display.drawSnake(snake);
             } catch (IOException e) {
                 System.out.println("An IO error has occurred");
                 gameOver = true;
@@ -147,6 +159,9 @@ public class Game {
         }
     }
 
+    /**
+     * checks and reacts to any collisions of the snake head with its body, apples, or the game board boundaries
+     */
     private void checkCollisions() {
         Position snakeHead = snake.getFirst();
         if (snakeHead.x < 0 ||
@@ -178,6 +193,9 @@ public class Game {
         }
     }
 
+    /**
+     * sets the gameOver state and writes gameOver to display
+     */
     private void gameOver() {
         gameOver = true;
         try {
@@ -187,6 +205,9 @@ public class Game {
         }
     }
 
+    /**
+     * increases snake length and places new apple on display
+     */
     private void eatApple() {
         score++;
         snakeLength++;
@@ -198,15 +219,12 @@ public class Game {
         }
     }
 
-
-
-
     // --------------- MAIN METHOD ---------------
 
     public static void main(String[] args) {
         System.out.println("Hello, World!");
         try {
-            Game game = new Game(1);
+            Game game = new Game(3);
             game.startGame();
             Thread.sleep(2500);
         } catch (InterruptedException ie) {
