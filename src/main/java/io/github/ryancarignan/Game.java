@@ -1,20 +1,3 @@
-// Game
-//     // The main class that handles all the game logic
-// ----
-// *display: Display            // handles drawing to the screen
-// *width: int                  // width of the game screen 
-// *height: int                 // height of the game screen
-// *snake: Position[1..*]       // each position of the snake body (probably as a LinkedList)
-// *apples: Position[1..*]      // position of each apple on screen (probably as array or ArrayList)
-// *snakeDirection: Position    // Direction (as single-direction single-magnitude Position) of the snake
-// *score: int                  // the number of apples (length of the snake) that the snake has eaten
-// ----
-// startGame()                 // starts the game loop
-// *moveSnake()                 // moves the snake in the direction of `direction`
-// *checkCollisions()           // checks if the snake head is colliding with its body, an apple, or the screen boundaries
-// *eatApple(apple: Position)   // remove apple, place new one, grow snake, increment score
-// *placeApple()                // places a new apple in a valid position
-
 package io.github.ryancarignan;
 
 import java.util.LinkedList;
